@@ -56,7 +56,7 @@ The sorts of `Predicate` function objects that could be passed to `all_of` that 
 Another use would be to check if all of the objects in a range fall in between two addresses (for instance, to copy all elements with one `memcpy` invocation).
 
 ### Conservative approach
-It would potentially be sufficient to preserve the alignment of the first element in the input range as well as the relative offsets of addresses of the other elements compared to the first, though this is unlikely to be widely important.  The second possible corner case could not necessarily be addressed by this approach.
+It would potentially be sufficient to preserve the alignment of the first element in the input range as well as the relative offsets of addresses of the other elements compared to the first, though this is unlikely to be widely important.  The second possible corner case would not necessarily be addressed by this approach.
 
 ### Flexible approach
 Forbid any reliance on `addressof` operations on the argument to `Predicate`.
@@ -73,6 +73,19 @@ Similar to [[#all_of]].
 ----------------------
 The function object passed to `for_each` is not included in [algorithms.parallel.user], therefore the proposed changes would not apply to `for_each`.
 
+`find` [alg.find] {#find}
+-------------------------
+The algorithms `find_if` and `find_if_not` both take `Predicate` arguments.  In addition to the use cases in [[#all_of]] where the user might want to find an object with an address outside of a particular range or with a particular alignment, it may be desirable to check the containment of a non-equality-comparable ([equalitycomparable] in [[N4604]]) object in a given range.  We do not see an easy way to provide a conservative approach that preserves the correct behavior in this case.
+
+### Conservative approach
+Under the same constraints as [[#all_of]], some (but not all) possible corner cases could be handled.  There is no easy way that we can conceive of to constrain the proposed restriction to enable the non-equality-comparable containment use case.  It may be worth excluding `find_*` functions from the `addressof` restriction for this reason.
+
+### Flexible approach
+Forbid any reliance on `addressof` operations on the argument to `Predicate`.  `Predicate`s like compare-by-address (as described above) would need to be run in serial or with a layer of indirection until more user-defined flexibility on the `addressof` behavior could be added to the language by some means.
+
+`find_*` {#find_other}
+-------------------------
+Other `find_*` functions raise similar concerns to those in {#find}.
 
 
 TODO subsections for all of the other cases here
