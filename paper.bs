@@ -1,0 +1,59 @@
+<pre class='metadata'>
+Title: TODO Add Title
+Shortname: D0???
+Revision: 0
+Audience: SG1
+Status: D
+Group: WG21
+URL: http://wg21.link/p0????
+Editor: David S Hollman, Sandia National Labs, dshollm@sandia.gov
+Editor: Michael Wong, CodePlay, michael@codeplay.com
+Editor: Detlef, ?, ?
+Abstract: Address NB comment CH 11 in [[P0488R0]]
+Date: 2016-11-09
+Markup Shorthands: markdown yes
+Toggle Diffs: yes
+</pre>
+
+<!---
+See, e.g., 
+https://github.com/jfbastien/papers/blob/master/source/P0418r1.bs
+for eaxmple
+-->
+
+Background {#bg}
+================
+
+National Body comment CH11 from [[P0488R0]] states:
+
+<blockquote>
+
+Comments: It may be useful to copy objects to a separate space for non-sequenced policies.
+
+Proposed Change: Add explicit allowance for non-sequenced policies to copy the objects
+they work on.
+
+</blockquote>
+
+Discussion in SG1 at Issaquah on this comment led to the suggestion that, at minimum, wording should be added to some or all of the parallel algorithms forbidding the reliance on the `addressof` operation for arguments to the function objects passed to a *parallel algorithm* [algorithms.parallel.defns].  A straw pole revealed unanimous agreement that a paper exploring this idea should be written.
+
+In particular, it was suggested that we examine the consequences of expanding or elaborating on the clause in [algorithms.parallel.user] to include language relating to the forbidding of reliance on the `addressof` operator for arguments to certain function objects (particularly the ones called out in this section).
+
+Approach
+========
+
+In general, the consequences of this new restriction should be considered in the context of each  overloaded library function in [[N4604]] that takes an execution policy and at least one user-defined function object.  For each of these, we will attempt to propose at least two options, one that tries to be more conservative with respect to potential for different behavior compared to the serial (i.e., `ExecutionPolicy`-free) overload, and one that tries to be more flexible with respect to implementer freedom, but allowing for different behavior from the serial overload in some (potentially far-fetched) cases.  For some algorithms, we may also propose one or more middle-ground options.
+
+Potential Blanket Restrictions
+------------------------------
+
+The primary purpose of the amendments proposed herein is to allow implementers the freedom to copy values to be passed to the user-defined function objects in order to enable certain performance optimizations.  It was generally agreed in the Issaquah discussion that this very quickly becomes counterproductive in the case of objects with non-trivial copy constructors (referencing *trivially copyable* from clause 9, paragraph 6).  Thus, a safer definition of these restrictions would restrict the `addressof` forbiddance to arguments of *trivially copyable* type.  This has the advantage that inconsistency between the 
+
+Discussion
+==========
+
+<xmp>all_of</xmp> [alg.all_of]
+------------------------------
+
+
+
