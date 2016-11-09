@@ -8,7 +8,7 @@ Group: WG21
 URL: http://wg21.link/p0????
 Editor: David S Hollman, Sandia National Labs, dshollm@sandia.gov
 Editor: Michael Wong, CodePlay, michael@codeplay.com
-Editor: Detlef, ?, ?
+Editor: Detlef, Company, dv@vollmann.ch
 Abstract: Address NB comment CH 11 in [[P0488R0]]
 Date: 2016-11-09
 Markup Shorthands: markdown yes
@@ -52,7 +52,7 @@ The primary purpose of the amendments proposed herein is to allow implementers t
 Discussion
 ==========
 
-<xmp>all_of</xmp> [alg.all_of]
+`all_of` [alg.all_of]
 ------------------------------
 
 
