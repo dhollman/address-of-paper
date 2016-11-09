@@ -36,21 +36,47 @@ In particular, it was suggested that we examine the consequences of expanding or
 Approach {#appr}
 ========
 
-In general, the consequences of this new restriction should be considered in the context of each  overloaded library function in [[N4604]] that takes an execution policy and at least one user-defined function object.  For each of these, we will attempt to propose at least two options, one that tries to be more conservative with respect to potential for different behavior compared to the serial (i.e., `ExecutionPolicy`-free) overload, and one that tries to be more flexible with respect to implementer freedom, but allowing for different behavior from the serial overload in some (potentially far-fetched) cases.  For some algorithms, we may also propose one or more middle-ground options.
+In general, the consequences of this new restriction should be considered in the context of each  overloaded library function in [[N4604]] that takes an execution policy and at least one user-defined function object.  For many of these, we will attempt to propose at least two options, one that tries to be more conservative with respect to potential for different behavior compared to the serial (i.e., `ExecutionPolicy`-free) overload, and one that tries to be more flexible with respect to implementer freedom, but allowing for different behavior from the serial overload in some (potentially far-fetched) cases.  For some algorithms, we may also propose one or more middle-ground options.
 
 Potential Blanket Restrictions {#blanket}
 ------------------------------
+
+TODO potentially omit any discussion of copying
 
 The primary purpose of the amendments proposed herein is to allow implementers the freedom to copy values to be passed to the user-defined function objects in order to enable certain performance optimizations.  It was generally agreed in the Issaquah discussion that this very quickly becomes counterproductive in the case of objects with non-trivial copy constructors (referencing *trivially copyable* from clause 9, paragraph 6).  Thus, a safer definition of these restrictions would restrict the `addressof` forbiddance to arguments of *trivially copyable* type.  This has the advantage that inconsistency between the 
 
 Discussion {#discuss}
 ==========
 
-`all_of` [alg.all_of] {#any_of}
+`all_of` [alg.all_of] {#all_of}
 ---------------------
+
+The sorts of `Predicate` function objects that could be passed to `all_of` that could rely on the address of the argument are very esoteric.  One use case that could have a `Predicate` reliant on the `addressof` the argument would be one that takes a modulus of that address to query consistency in the alignment of all items in a range (though there are probably better ways to do this).
+
+Another use would be to check if all of the objects in a range fall in between two addresses (for instance, to copy all elements with one `memcpy` invocation).
+
+### Conservative approach
+It would potentially be sufficient to preserve the alignment of the first element in the input range as well as the relative offsets of addresses of the other elements compared to the first, though this is unlikely to be widely important.  The second possible corner case could not necessarily be addressed by this approach.
+
+### Flexible approach
+Forbid any reliance on `addressof` operations on the argument to `Predicate`.
+
+`any_of` [alg.any_of] {#any_of}
+---------------------
+Similar to [[#all_of]].
+
+`none_of` [alg.none_of] {#none_of}
+---------------------
+Similar to [[#all_of]].
+
+`for_each` [alg.foreach] {#foreach}
+----------------------
+The function object passed to `for_each` is not included in [algorithms.parallel.user], therefore the proposed changes would not apply to `for_each`.
+
 
 
 TODO subsections for all of the other cases here
+
 
 
 Proposed Wording {#word}
