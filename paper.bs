@@ -15,12 +15,6 @@ Markup Shorthands: markdown yes
 Toggle Diffs: yes
 </pre>
 
-<!---
-See, e.g., 
-https://github.com/jfbastien/papers/blob/master/source/P0418r1.bs
-for eaxmple
--->
-
 Background {#bg}
 ================
 
@@ -56,4 +50,12 @@ Discussion
 ------------------------------
 
 
+TODO subsections for all of the other cases here
+
+
+Proposed Wording
+================
+
+TODO wording for "blanket" change in 25.2.2
+TODO wording for specific sections where blanket change doesn't make sense
 
