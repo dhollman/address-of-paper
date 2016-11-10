@@ -166,7 +166,7 @@ Change paragraph 1 of [algorithms.parallel.user] to:
 
 <blockquote>
 
-Function objects passed into parallel algorithms as objects of type `Predicate`, `BinaryPredicate`, `Compare`, <ins>`UnaryOperation`</ins> and `BinaryOperation` shall not directly or indirectly modify objects via their arguments <ins>or rely on the address of the objects unless otherwise specified for a specific algorithm.</ins>
+Function objects passed into parallel algorithms as objects of type `Predicate`, `BinaryPredicate`, `Compare`, <ins>UnaryOperation</ins> and `BinaryOperation` shall not directly or indirectly modify objects via their arguments <ins>or rely on the address of the objects unless otherwise specified for a specific algorithm.</ins>
 
 </blockquote>
 
