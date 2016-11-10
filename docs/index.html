@@ -1486,6 +1486,7 @@ they work on.</p>
    <p>In particular, it was suggested that we examine the consequences of expanding or elaborating on the clause in [algorithms.parallel.user] to include language relating to the forbidding of reliance on the <code class="highlight"><span class="n">addressof</span></code> operator for arguments to certain function objects (particularly the ones called out in this section).</p>
    <h2 class="heading settled" data-level="2" id="appr"><span class="secno">2. </span><span class="content">Approach</span><a class="self-link" href="#appr"></a></h2>
    <p>In general, the consequences of this new restriction should be considered in the context of each  overloaded library function in <a data-link-type="biblio" href="#biblio-n4604">[N4604]</a> that takes an execution policy and at least one user-defined function object.  For many of these, we will attempt to propose at least two options, one that tries to be more conservative with respect to potential for different behavior compared to the serial (i.e., <code class="highlight"><span class="n">ExecutionPolicy</span></code>-free) overload, and one that tries to be more flexible with respect to implementer freedom, but allowing for different behavior from the serial overload in some (potentially far-fetched) cases.  For some algorithms, we may also propose one or more middle-ground options.</p>
+   <p class="issue" id="issue-8f436473"><a class="self-link" href="#issue-8f436473"></a> TODO (perhaps?) consider the implications of restricting the <code class="highlight"><span class="n">addressof</span></code> forbiddance to arguments of <em>trivially copyable</em> type (or reference to <em>trivially copyable</em> type)</p>
    <h2 class="heading settled" data-level="3" id="discuss"><span class="secno">3. </span><span class="content">Discussion</span><a class="self-link" href="#discuss"></a></h2>
    <p class="issue" id="issue-7ab40449"><a class="self-link" href="#issue-7ab40449"></a> TODO broad discussion of the half-dozen or so general categories of use cases</p>
    <h3 class="heading settled" data-level="3.1" id="all_of"><span class="secno">3.1. </span><span class="content"><code class="highlight"><span class="n">all_of</span></code> [alg.all_of]</span><a class="self-link" href="#all_of"></a></h3>
@@ -1694,6 +1695,7 @@ they work on.</p>
   </dl>
   <h2 class="no-num no-ref heading settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
   <div style="counter-reset:issue">
+   <div class="issue"> TODO (perhaps?) consider the implications of restricting the <code class="highlight"><span class="n">addressof</span></code> forbiddance to arguments of <em>trivially copyable</em> type (or reference to <em>trivially copyable</em> type)<a href="#issue-8f436473"> ↵ </a></div>
    <div class="issue"> TODO broad discussion of the half-dozen or so general categories of use cases<a href="#issue-7ab40449"> ↵ </a></div>
    <div class="issue"> TODO: wording for specific sections where blanket change doesn’t make sense, as recommended by SG1 following discussion<a href="#issue-148c0b8c"> ↵ </a></div>
   </div>

@@ -50,6 +50,8 @@ TODO potentially omit any discussion of copying
 The primary purpose of the amendments proposed herein is to allow implementers the freedom to copy values to be passed to the user-defined function objects in order to enable certain performance optimizations.  It was generally agreed in the Issaquah discussion that this very quickly becomes counterproductive in the case of objects with non-trivial copy constructors (referencing *trivially copyable* from clause 9, paragraph 6).  Thus, a safer definition of these restrictions would restrict the `addressof` forbiddance to arguments of *trivially copyable* type.  This has the advantage that inconsistency between the 
 -->
 
+issue: TODO (perhaps?) consider the implications of restricting the `addressof` forbiddance to arguments of *trivially copyable* type (or reference to *trivially copyable* type)
+
 Discussion {#discuss}
 ==========
 
