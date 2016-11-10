@@ -7,6 +7,7 @@ Status: D
 Group: WG21
 URL: http://wg21.link/p0????
 Editor: David S Hollman, Sandia National Labs, dshollm@sandia.gov
+Editor: Jonathan Lifflander, Sandia National Labs, jliffla@sandia.gov
 Editor: Michael Wong, CodePlay, michael@codeplay.com
 Editor: Detlef, Company, dv@vollmann.ch
 Abstract: Address NB comment CH 11 in [[P0488R0]]
@@ -38,12 +39,15 @@ Approach {#appr}
 
 In general, the consequences of this new restriction should be considered in the context of each  overloaded library function in [[N4604]] that takes an execution policy and at least one user-defined function object.  For many of these, we will attempt to propose at least two options, one that tries to be more conservative with respect to potential for different behavior compared to the serial (i.e., `ExecutionPolicy`-free) overload, and one that tries to be more flexible with respect to implementer freedom, but allowing for different behavior from the serial overload in some (potentially far-fetched) cases.  For some algorithms, we may also propose one or more middle-ground options.
 
+
+<!---
 Potential Blanket Restrictions {#blanket}
 ------------------------------
 
 TODO potentially omit any discussion of copying
 
 The primary purpose of the amendments proposed herein is to allow implementers the freedom to copy values to be passed to the user-defined function objects in order to enable certain performance optimizations.  It was generally agreed in the Issaquah discussion that this very quickly becomes counterproductive in the case of objects with non-trivial copy constructors (referencing *trivially copyable* from clause 9, paragraph 6).  Thus, a safer definition of these restrictions would restrict the `addressof` forbiddance to arguments of *trivially copyable* type.  This has the advantage that inconsistency between the 
+-->
 
 Discussion {#discuss}
 ==========
@@ -83,18 +87,88 @@ Under the same constraints as [[#all_of]], some (but not all) possible corner ca
 ### Flexible approach
 Forbid any reliance on `addressof` operations on the argument to `Predicate`.  `Predicate`s like compare-by-address (as described above) would need to be run in serial or with a layer of indirection until more user-defined flexibility on the `addressof` behavior could be added to the language by some means.
 
-`find_*` {#find_other}
+`find_end` [alg.find.end] {#find_end}
 -------------------------
-Other `find_*` functions raise similar concerns to those in {#find}.
+Because `find_end` takes a binary predicate, it could be reasonable to provide a restriction intermediate to that of [[#find]] in which the relationship between the addresses of the arguments to the `BinaryPredicate` remains unchanged.
 
+`find_first` [alg.find.first.of] {#find_first}
+-------------------------
+Similar to [[#find_end]]
 
-TODO subsections for all of the other cases here
+`adjacent_find` [alg.adjacent.find] {#adjacent_find}
+-------------------------
+Similar to [[#find_end]]
 
+`count` [alg.count] {#count}
+-------------------
+The major concerns surrounding `count` are similar to those of [[#any_of]]
 
+`mismatch` [mismatch] {#mismatch}
+---------------------
+Similar to [[#find_end]]
+
+`equal` [alg.equal] {#equal}
+---------------------
+Similar to [[#find_end]]
+
+`search` [alg.search] {#search}
+---------------------
+Similar to [[#find_end]]
+
+`copy_if` [alg.copy] {#copy_if}
+--------------------------
+Similar to [[#all_of]], except that the alignment argument is a bit weaker here.
+
+`transform` [alg.transform] {#transform}
+-----------------------
+We could not come up with a reasonable use case for which `transform` would need a `UnaryOperation` that depends on the address of its argument.
+
+`replace_if` [alg.replace]
+--------------------------
+Similar to [[#find]]
+
+`replace_copy_if` [alg.replace]
+--------------------------
+Similar to [[#find]]
+
+`remove_if` [alg.remove]
+--------------------------
+Similar to [[#find]]
+
+`remove_copy_if` [alg.remove]
+--------------------------
+Similar to [[#find]]
+
+`unique` [alg.unique]
+---------------------
+Similar to [[#find_end]]
+
+`unique_copy` [alg.unique]
+---------------------
+Similar to [[#find_end]]
+
+`partition` [alg.partition]
+---------------------------
+`partition` and related functions (`is_partitioned`, `stable_partition`, `partition_copy`) have a specific reasonable use case: radix sort binning.  We cannot come up with a reasonable conservative approach that works for this use case.
+
+`sort` [alg.sort] {#sort}
+--------------------
+The most compelling use case for `sort` with a `Compare` operation that relies on the addresses of its arguments is the sorting of locks for the purpose of deadlock avoidance.  We acknowledge that this is a legitimate use case and therefore suggest we consider explicitly excluding `sort` from the `addressof` restriction.
+
+`stable_sort` [stable.sort]
+-----------------------------
+Similar to [[#sort]]
 
 Proposed Wording {#word}
 ================
 
-TODO wording for "blanket" change in 25.2.2
+Change paragraph 1 of [algorithms.parallel.user] to:
+
+<blockquote>
+
+Function objects passed into parallel algorithms as objects of type `Predicate`, `BinaryPredicate`, `Compare`, <ins>`UnaryOperation`</ins> and `BinaryOperation` shall not directly or indirectly modify objects via their arguments <ins>or rely on the address of the objects unless otherwise specified for a specific algorithm.</ins>
+
+</blockquote>
+
 TODO wording for specific sections where blanket change doesn't make sense
 
