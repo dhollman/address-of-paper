@@ -57,6 +57,8 @@ Discussion {#discuss}
 
 issue: TODO broad discussion of the half-dozen or so general categories of use cases
 
+issue: TODO discuss the general problem that, even in the algorithms that do not take function object arguments, `operator==` or `operator!=` (for instance) could rely on the address of their arguments.
+
 `all_of` [alg.all_of] {#all_of}
 ---------------------
 
@@ -94,7 +96,16 @@ Forbid any reliance on `addressof` operations on the argument to `Predicate`.  `
 
 `find_end` [alg.find.end] {#find_end}
 -------------------------
-Because `find_end` takes a binary predicate, it could be reasonable to provide a restriction intermediate to that of [[#find]] in which the relationship between the addresses of the arguments to the `BinaryPredicate` remains unchanged.
+Since `find_end` operates on two different sequences, the analogs of the use cases in [[#find]] constitute a lot more esoteric use cases.  Whereas it is easy to envision a `Predicate` to `find_if` that is, for instance, a lambda that captures a reference to a desired value and compares its address to that of the argument passed to `Predicate`, the analogous use case that takes a `BinaryPredicate` is more likely to do something like compare the addresses of the arguments to *each other*, which is much more easily handled by the conservative approach
+
+### Conservative approach
+For `find_end` and most other algorithms that take a `BinaryPredicate` function argument, it could be reasonable to provide a restriction intermediate to that of [[#find]] in which the relationship between the addresses of the arguments in any given call to the `BinaryPredicate` remains unchanged (but allow the relationships between addresses of arguments in different calls to be completely unconstrained).
+
+### Less conservative approach
+A slightly weaker restriction that still covers a lot of the use cases is to require only that the equality relationship on the addresses of the arguments be preserved.  This gives the implementation much more flexibility since it need not allocate memory the side of the distance between the argument addresses in order to make the call safely.  This approach also covers most of the use cases for most of the algorithms requiring `BinaryPredicate` function objects.
+
+### Flexible approach
+The flexible approach of completely forbidding `addressof` operations on arguments to `find_end` and most other algorithms that take a `BinaryPredicate` has pretty much the same drawbacks as the other algorithms, with the caveat that the conservative approach is less restrictive and exposes much of the functionality (thus making the flexible approach slightly less appealing).
 
 `find_first` [alg.find.first.of] {#find_first}
 -------------------------
