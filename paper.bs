@@ -14,6 +14,7 @@ Abstract: Address NB comment CH 11 in [[P0488R0]]
 Date: 2016-11-09
 Markup Shorthands: markdown yes
 Toggle Diffs: yes
+Repository: dhollman/address-of-paper
 </pre>
 
 Background {#bg}
@@ -51,6 +52,8 @@ The primary purpose of the amendments proposed herein is to allow implementers t
 
 Discussion {#discuss}
 ==========
+
+issue: TODO broad discussion of the half-dozen or so general categories of use cases
 
 `all_of` [alg.all_of] {#all_of}
 ---------------------
@@ -170,5 +173,5 @@ Function objects passed into parallel algorithms as objects of type `Predicate`,
 
 </blockquote>
 
-issue: TODO: wording for specific sections where blanket change doesn't make sense
+issue: TODO: wording for specific sections where blanket change doesn't make sense, as recommended by SG1 following discussion
 

@@ -1487,6 +1487,7 @@ they work on.</p>
    <h2 class="heading settled" data-level="2" id="appr"><span class="secno">2. </span><span class="content">Approach</span><a class="self-link" href="#appr"></a></h2>
    <p>In general, the consequences of this new restriction should be considered in the context of each  overloaded library function in <a data-link-type="biblio" href="#biblio-n4604">[N4604]</a> that takes an execution policy and at least one user-defined function object.  For many of these, we will attempt to propose at least two options, one that tries to be more conservative with respect to potential for different behavior compared to the serial (i.e., <code class="highlight"><span class="n">ExecutionPolicy</span></code>-free) overload, and one that tries to be more flexible with respect to implementer freedom, but allowing for different behavior from the serial overload in some (potentially far-fetched) cases.  For some algorithms, we may also propose one or more middle-ground options.</p>
    <h2 class="heading settled" data-level="3" id="discuss"><span class="secno">3. </span><span class="content">Discussion</span><a class="self-link" href="#discuss"></a></h2>
+   <p class="issue" id="issue-7ab40449"><a class="self-link" href="#issue-7ab40449"></a> TODO broad discussion of the half-dozen or so general categories of use cases</p>
    <h3 class="heading settled" data-level="3.1" id="all_of"><span class="secno">3.1. </span><span class="content"><code class="highlight"><span class="n">all_of</span></code> [alg.all_of]</span><a class="self-link" href="#all_of"></a></h3>
    <p>The sorts of <code class="highlight"><span class="n">Predicate</span></code> function objects that could be passed to <code class="highlight"><span class="n">all_of</span></code> that could rely on the address of the argument are very esoteric.  One use case that could have a <code class="highlight"><span class="n">Predicate</span></code> reliant on the <code class="highlight"><span class="n">addressof</span></code> the argument would be one that takes a modulus of that address to query consistency in the alignment of all items in a range (though there are probably better ways to do this).</p>
    <p>Another use would be to check if all of the objects in a range fall in between two addresses (for instance, to copy all elements with one <code class="highlight"><span class="n">memcpy</span></code> invocation).</p>
@@ -1552,7 +1553,7 @@ they work on.</p>
      <ins>or rely on the address of the objects unless otherwise specified for a specific algorithm.</ins>
     </p>
    </blockquote>
-   <p class="issue" id="issue-891b4c9e"><a class="self-link" href="#issue-891b4c9e"></a> TODO: wording for specific sections where blanket change doesn’t make sense</p>
+   <p class="issue" id="issue-148c0b8c"><a class="self-link" href="#issue-148c0b8c"></a> TODO: wording for specific sections where blanket change doesn’t make sense, as recommended by SG1 following discussion</p>
   </main>
 <script>
 (function() {
@@ -1693,5 +1694,6 @@ they work on.</p>
   </dl>
   <h2 class="no-num no-ref heading settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
   <div style="counter-reset:issue">
-   <div class="issue"> TODO: wording for specific sections where blanket change doesn’t make sense<a href="#issue-891b4c9e"> ↵ </a></div>
+   <div class="issue"> TODO broad discussion of the half-dozen or so general categories of use cases<a href="#issue-7ab40449"> ↵ </a></div>
+   <div class="issue"> TODO: wording for specific sections where blanket change doesn’t make sense, as recommended by SG1 following discussion<a href="#issue-148c0b8c"> ↵ </a></div>
   </div>
