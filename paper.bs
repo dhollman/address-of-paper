@@ -158,11 +158,13 @@ Similar to [[#find_end]]
 
 `sort` [alg.sort] {#sort}
 --------------------
-The most compelling use case for `sort` with a `Compare` operation that relies on the addresses of its arguments is the sorting of locks for the purpose of deadlock avoidance.  We acknowledge that this is a legitimate use case and therefore suggest we consider explicitly excluding `sort` from the `addressof` restriction.
+The most compelling use case for `sort` with a `Compare` operation that relies on the addresses of its arguments is the sorting of locks for the purpose of deadlock avoidance.  We acknowledge that this is a legitimate use case and therefore suggest we consider explicitly excluding `sort` from the `addressof` restriction.  The conservative approach suggested for [[#find_end]] and other algorithms that take a `BinaryPredicate` would cover this use case, though, as well as most of the other cases that take `Compare` function objects.
 
 `stable_sort` [stable.sort]
 -----------------------------
 Similar to [[#sort]]
+
+advisement: There are more algorithms that could be considered in this section, but we feel we’ve covered most of the broad categories of use cases.  If SG1 feels it is necessary, we can extend this to include subsections for the rest of the parallel algorithms in [[N4604]]
 
 Proposed Wording {#word}
 ================
