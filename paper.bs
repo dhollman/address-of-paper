@@ -1,5 +1,5 @@
 <pre class='metadata'>
-Title: TODO Add Title
+Title: Restricting address reliance of function objects given to parallel algorithms
 Shortname: D0???
 Revision: 0
 Audience: SG1
@@ -170,5 +170,5 @@ Function objects passed into parallel algorithms as objects of type `Predicate`,
 
 </blockquote>
 
-TODO wording for specific sections where blanket change doesn't make sense
+issue: TODO: wording for specific sections where blanket change doesn't make sense
 
