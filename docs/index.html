@@ -1398,6 +1398,15 @@ Possible extra rowspan handling
      <dd><a class="u-url" href="http://wg21.link/p0518">http://wg21.link/p0518</a>
      <dt>Issue Tracking:
      <dd><a href="#issues-index">Inline In Spec</a>
+     <dt>Authors:
+     <dd>
+      <dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:dshollm@sandia.gov">David S. Hollman</a> (<span class="p-org org">Sandia National Labs</span>)
+     <dd>
+      <dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:jliffla@sandia.gov">Jonathan Lifflander</a> (<span class="p-org org">Sandia National Labs</span>)
+     <dd>
+      <dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:michael@codeplay.com">Michael Wong</a> (<span class="p-org org">Codeplay</span>)
+     <dd>
+      <dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:dv@vollmann.ch">Detlef Vollmann</a> (<span class="p-org org">Vollmann Engineering</span>)
      <dt>Audience:
      <dd>SG1
      <dt>Toggle Diffs:
@@ -1564,7 +1573,7 @@ they work on.</p>
      Function objects passed into parallel algorithms as objects of type <code class="highlight"><span class="n">Predicate</span></code>, <code class="highlight"><span class="n">BinaryPredicate</span></code>, <code class="highlight"><span class="n">Compare</span></code>, 
      <ins>UnaryOperation</ins>
       and <code class="highlight"><span class="n">BinaryOperation</span></code> shall not directly or indirectly modify objects via their arguments 
-     <ins>or rely on the address of the objects unless otherwise specified for a specific algorithm.</ins>
+     <ins>and maybe a copy. </ins>
     </p>
    </blockquote>
    <p class="issue" id="issue-42694933"><a class="self-link" href="#issue-42694933"></a> TODO: wording for specific sections where blanket change doesn’t make sense, as recommended by SG1 following discussion

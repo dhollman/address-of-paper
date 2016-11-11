@@ -7,10 +7,10 @@ Status: D
 Group: WG21
 Warning: Not Ready
 URL: http://wg21.link/p0518
-Author: David S. Hollman, Sandia National Labs, dshollm@sandia.gov
-Author: Jonathan Lifflander, Sandia National Labs, jliffla@sandia.gov
-Author: Michael Wong, Codeplay, michael@codeplay.com
-Author: Detlef Vollmann, Vollmann Engineering, dv@vollmann.ch
+Editor: David S. Hollman, Sandia National Labs, dshollm@sandia.gov
+Editor: Jonathan Lifflander, Sandia National Labs, jliffla@sandia.gov
+Editor: Michael Wong, Codeplay, michael@codeplay.com
+Editor: Detlef Vollmann, Vollmann Engineering, dv@vollmann.ch
 Abstract: Address NB comment CH 11 in [[P0488R0]]
 Date: 2016-11-09
 Markup Shorthands: markdown yes
