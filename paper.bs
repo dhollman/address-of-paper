@@ -1,16 +1,16 @@
 <pre class='metadata'>
-Title: Restricting address reliance of function objects given to parallel algorithms
-Shortname: D0???
+Title: Restricting address reliance of function objects given to parallel algorithms in response to CH11
+Shortname: D0518
 Revision: 0
 Audience: SG1
 Status: D
 Group: WG21
 Warning: Not Ready
-URL: http://wg21.link/p0????
-Editor: David S. Hollman, Sandia National Labs, dshollm@sandia.gov
-Editor: Jonathan Lifflander, Sandia National Labs, jliffla@sandia.gov
-Editor: Michael Wong, CodePlay, michael@codeplay.com
-Editor: Detlef Vollmann, Vollmann Engineering, dv@vollmann.ch
+URL: http://wg21.link/p0518
+Author: David S. Hollman, Sandia National Labs, dshollm@sandia.gov
+Author: Jonathan Lifflander, Sandia National Labs, jliffla@sandia.gov
+Author: Michael Wong, Codeplay, michael@codeplay.com
+Author: Detlef Vollmann, Vollmann Engineering, dv@vollmann.ch
 Abstract: Address NB comment CH 11 in [[P0488R0]]
 Date: 2016-11-09
 Markup Shorthands: markdown yes
@@ -190,4 +190,10 @@ Function objects passed into parallel algorithms as objects of type `Predicate`,
 </blockquote>
 
 issue: TODO: wording for specific sections where blanket change doesn't make sense, as recommended by SG1 following discussion
+issue: clarify what is restricted: can we take the address, or the result cannnot be relied on
+issue: can we change it to effect of copy? can say the arguments may be a copy of the original, then avoid side effects of copy and move constructors.
+issue: unify compare algorithm section starting with sort, compare can't modify the arguments
+issue: no observable effect different from trivially copyable
+
+
 
