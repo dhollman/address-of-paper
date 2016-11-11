@@ -1447,14 +1447,13 @@ they work on.</p>
    <h2 class="heading settled" data-level="2" id="word"><span class="secno">2. </span><span class="content">Proposed Wording</span><a class="self-link" href="#word"></a></h2>
    <p>With discussion to follow below (<a href="#discuss">§3 Discussion and Justification</a>), we recommend that the committee change paragraph 1 of [algorithms.parallel.user] to:</p>
    <blockquote>
-    <p>
-     Function objects passed into parallel algorithms as objects of type <code class="highlight"><span class="n">Predicate</span></code>, <code class="highlight"><span class="n">BinaryPredicate</span></code>, <code class="highlight"><span class="n">Compare</span></code>, 
-     <ins>UnaryOperation</ins>
-      and <code class="highlight"><span class="n">BinaryOperation</span></code> 
-     <ins>and the operators used by the analogous overloads to these parallel algorithms that could be formed by the invocation with the specified default predicate or operation (where applicable)</ins>
-      shall not directly or indirectly modify objects via their arguments
-     <ins>, which may be a copy of the original object(s) from the range(s) on which the algorithm operates.</ins>
-    </p>
+    <ins>Unless otherwise specified,</ins>
+     function objects passed into parallel algorithms as objects of type <code class="highlight"><span class="n">Predicate</span></code>, <code class="highlight"><span class="n">BinaryPredicate</span></code>, <code class="highlight"><span class="n">Compare</span></code>, 
+    <ins>UnaryOperation</ins>
+     and <code class="highlight"><span class="n">BinaryOperation</span></code> 
+    <ins>and the operators used by the analogous overloads to these parallel algorithms that could be formed by the invocation with the specified default predicate or operation (where applicable)</ins>
+     shall not directly or indirectly modify objects via their arguments
+    <ins>, which may be a copy of the original object(s) from the range(s) on which the algorithm operates.</ins>
     <ins>Copy operations for this purpose must have no observable effects differing from if the argument were of <em>trivially copyable</em> type ([basic.types]) and the trivial copy constructor were used to construct the argument from the original object.</ins>
     <ins>[<em>Note:</em> Programmers for whom the object identity of the arguments to these function objects is important should consider using a wrapping iterator that returns a noncopied implementation object such as <code class="highlight"><span class="n">reference_wrapper</span><span class="o">&lt;</span><span class="n">T</span><span class="o">></span></code> [refwrap] or some equivalent solution. -<em>end note</em>]</ins>
    </blockquote>
@@ -1465,6 +1464,7 @@ they work on.</p>
    <p>Most of the algorithms that take a <code class="highlight"><span class="n">BinaryPredicate</span></code> argument are even less problematic that the first two.  An example here would be <code class="highlight"><span class="n">unique</span></code> [alg.unique].  We considered an amendment of the wording in <a href="#word">§2 Proposed Wording</a> for the case of <code class="highlight"><span class="n">BinaryPredicate</span></code> that would require the relationship (in terms of total ordering) between the addresses of the arguments to be the same as in the original objects, but we decided against this in the interest of simplicity.</p>
    <p>The least problematic cases are those that take a <code class="highlight"><span class="n">UnaryOperation</span></code> or <code class="highlight"><span class="n">BinaryOperation</span></code> function object (note that <code class="highlight"><span class="n">for_each</span></code> [alg.foreach] is excluded from this, since it takes an argument with the template parameter name <code class="highlight"><span class="n">Function</span></code> instead).  An example of this is <code class="highlight"><span class="n">transform</span></code> [alg.transform].  Since these take an argument (or two arguments) and return an object by value (for which the function object has no control over the address once copied), it is hard to imagine many use cases where the object identity of the arguments to these function objects is important, since that of the return value cannot be.  We do not claim that there are no use cases here affected by the proposed change, but it is a pretty reasonable argument that the potential benefits in terms of implementation flexibility outweigh the inconvenience of requiring indirection in these corner cases.</p>
    <p>A wide variety of options were considered with respect to the requirements on the copyability of the objects in question for the wording suggested above.  It was noted that virtually any non-trivial copy constructor would either require the compiler to serialize the copy operations or prove the thread-safety of the copy constructor, which could be in another translation unit.  We settled on the <em>as-if</em> style wording given above to allow the implementation to examine the side-effects of a user-provided copy constructor if it desires and to prevent a scenario in which the user attempts to assert control over the copying behavior of the algorithm implementation by adding a copy constructor equivalent to the trivial one (which would be arcane and thus undesirable).</p>
+   <p>The note in <a href="#word">§2 Proposed Wording</a> is intended to mimic that of the note in paragraph 10 of [algorithms.general], which references similar interactions with the function objects themselves.</p>
   </main>
 <script>
 (function() {

@@ -42,7 +42,7 @@ With discussion to follow below ([[#discuss]]), we recommend that the committee 
 
 <blockquote>
 
-Function objects passed into parallel algorithms as objects of type `Predicate`, `BinaryPredicate`, `Compare`, <ins>UnaryOperation</ins> and `BinaryOperation` <ins>and the operators used by the analogous overloads to these parallel algorithms that could be formed by the invocation with the specified default predicate or operation (where applicable)</ins> shall not directly or indirectly modify objects via their arguments<ins>, which may be a copy of the original object(s) from the range(s) on which the algorithm operates.</ins>
+<ins>Unless otherwise specified,</ins> function objects passed into parallel algorithms as objects of type `Predicate`, `BinaryPredicate`, `Compare`, <ins>UnaryOperation</ins> and `BinaryOperation` <ins>and the operators used by the analogous overloads to these parallel algorithms that could be formed by the invocation with the specified default predicate or operation (where applicable)</ins> shall not directly or indirectly modify objects via their arguments<ins>, which may be a copy of the original object(s) from the range(s) on which the algorithm operates.</ins>
 
 <ins>Copy operations for this purpose must have no observable effects differing from if the argument were of *trivially copyable* type ([basic.types]) and the trivial copy constructor were used to construct the argument from the original object.</ins>
 
@@ -77,6 +77,8 @@ Most of the algorithms that take a `BinaryPredicate` argument are even less prob
 The least problematic cases are those that take a `UnaryOperation` or `BinaryOperation` function object (note that `for_each` [alg.foreach] is excluded from this, since it takes an argument with the template parameter name `Function` instead).  An example of this is `transform` [alg.transform].  Since these take an argument (or two arguments) and return an object by value (for which the function object has no control over the address once copied), it is hard to imagine many use cases where the object identity of the arguments to these function objects is important, since that of the return value cannot be.  We do not claim that there are no use cases here affected by the proposed change, but it is a pretty reasonable argument that the potential benefits in terms of implementation flexibility outweigh the inconvenience of requiring indirection in these corner cases.
 
 A wide variety of options were considered with respect to the requirements on the copyability of the objects in question for the wording suggested above.  It was noted that virtually any non-trivial copy constructor would either require the compiler to serialize the copy operations or prove the thread-safety of the copy constructor, which could be in another translation unit.  We settled on the *as-if* style wording given above to allow the implementation to examine the side-effects of a user-provided copy constructor if it desires and to prevent a scenario in which the user attempts to assert control over the copying behavior of the algorithm implementation by adding a copy constructor equivalent to the trivial one (which would be arcane and thus undesirable).
+
+The note in [[#word]] is intended to mimic that of the note in paragraph 10 of [algorithms.general], which references similar interactions with the function objects themselves.
 
 <!--
 `all_of` [alg.all_of] {#all_of}
