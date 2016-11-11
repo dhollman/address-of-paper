@@ -2,7 +2,7 @@
  <head>
   <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
   <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-  <title>d0518r0: Restricting address reliance of function objects given to parallel algorithms in response to CH11</title>
+  <title>d0518r0: Allowing copies as arguments to function objects given to parallel algorithms in response to CH11</title>
 <style data-fill-with="stylesheet">/******************************************************************************
  *                   Style sheet for the W3C specifications                   *
  *
@@ -1390,14 +1390,12 @@ Possible extra rowspan handling
   <input id="hidedel" style="display:none" type="checkbox">
   <div class="head">
    <p data-fill-with="logo"></p>
-   <h1 class="p-name no-ref" id="title">d0518r0<br>Restricting address reliance of function objects given to parallel algorithms in response to CH11</h1>
+   <h1 class="p-name no-ref" id="title">d0518r0<br>Allowing copies as arguments to function objects given to parallel algorithms in response to CH11</h1>
    <h2 class="no-num no-toc no-ref heading settled" id="subtitle"><span class="content">Draft Proposal, <time class="dt-updated" datetime="2016-11-09">9 November 2016</time></span></h2>
    <div data-fill-with="spec-metadata">
     <dl>
      <dt>This version:
      <dd><a class="u-url" href="http://wg21.link/p0518">http://wg21.link/p0518</a>
-     <dt>Issue Tracking:
-     <dd><a href="#issues-index">Inline In Spec</a>
      <dt>Authors:
      <dd>
       <dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:dshollm@sandia.gov">David S. Hollman</a> (<span class="p-org org">Sandia National Labs</span>)
@@ -1416,76 +1414,24 @@ Possible extra rowspan handling
      <dd><span>ISO JTC1/SC22/WG21: Programming Language C++</span>
     </dl>
    </div>
-   <div data-fill-with="warning">
-    <details class="annoying-warning" open="">
-     <summary>Not Ready For Implementation</summary>
-     <p> This spec is not yet ready for implementation.
-		It exists in this repository to record the ideas and promote discussion. </p>
-     <p> Before attempting to implement this spec,
-		please contact the editors. </p>
-    </details>
-   </div>
+   <div data-fill-with="warning"></div>
    <hr title="Separator for header">
   </div>
   <h2 class="no-num no-toc no-ref heading settled" id="abstract"><span class="content">Abstract</span></h2>
   <div class="p-summary" data-fill-with="abstract">
-   <p>Address NB comment CH 11 in <a data-link-type="biblio" href="#biblio-p0488r0">[P0488R0]</a></p>
+   <p>This paper addresses NB comment CH 11 in <a data-link-type="biblio" href="#biblio-p0488r0">[P0488R0]</a></p>
   </div>
   <nav data-fill-with="table-of-contents" id="toc">
    <h2 class="no-num no-toc no-ref" id="contents">Table of Contents</h2>
    <ol class="toc" role="directory">
     <li><a href="#bg"><span class="secno">1</span> <span class="content">Background</span></a>
-    <li><a href="#appr"><span class="secno">2</span> <span class="content">Approach</span></a>
-    <li>
-     <a href="#discuss"><span class="secno">3</span> <span class="content">Discussion</span></a>
-     <ol class="toc">
-      <li>
-       <a href="#all_of"><span class="secno">3.1</span> <span class="content"><code class="highlight"><span class="n">all_of</span></code> [alg.all_of]</span></a>
-       <ol class="toc">
-        <li><a href="#conservative-approach"><span class="secno">3.1.1</span> <span class="content">Conservative approach</span></a>
-        <li><a href="#flexible-approach"><span class="secno">3.1.2</span> <span class="content">Flexible approach</span></a>
-       </ol>
-      <li><a href="#any_of"><span class="secno">3.2</span> <span class="content"><code class="highlight"><span class="n">any_of</span></code> [alg.any_of]</span></a>
-      <li><a href="#none_of"><span class="secno">3.3</span> <span class="content"><code class="highlight"><span class="n">none_of</span></code> [alg.none_of]</span></a>
-      <li><a href="#foreach"><span class="secno">3.4</span> <span class="content"><code class="highlight"><span class="n">for_each</span></code> [alg.foreach]</span></a>
-      <li>
-       <a href="#find"><span class="secno">3.5</span> <span class="content"><code class="highlight"><span class="n">find</span></code> [alg.find]</span></a>
-       <ol class="toc">
-        <li><a href="#conservative-approach0"><span class="secno">3.5.1</span> <span class="content">Conservative approach</span></a>
-        <li><a href="#flexible-approach0"><span class="secno">3.5.2</span> <span class="content">Flexible approach</span></a>
-       </ol>
-      <li>
-       <a href="#find_end"><span class="secno">3.6</span> <span class="content"><code class="highlight"><span class="n">find_end</span></code> [alg.find.end]</span></a>
-       <ol class="toc">
-        <li><a href="#conservative-approach1"><span class="secno">3.6.1</span> <span class="content">Conservative approach</span></a>
-        <li><a href="#less-conservative-approach"><span class="secno">3.6.2</span> <span class="content">Less conservative approach</span></a>
-        <li><a href="#flexible-approach1"><span class="secno">3.6.3</span> <span class="content">Flexible approach</span></a>
-       </ol>
-      <li><a href="#find_first"><span class="secno">3.7</span> <span class="content"><code class="highlight"><span class="n">find_first</span></code> [alg.find.first.of]</span></a>
-      <li><a href="#adjacent_find"><span class="secno">3.8</span> <span class="content"><code class="highlight"><span class="n">adjacent_find</span></code> [alg.adjacent.find]</span></a>
-      <li><a href="#count"><span class="secno">3.9</span> <span class="content"><code class="highlight"><span class="n">count</span></code> [alg.count]</span></a>
-      <li><a href="#mismatch"><span class="secno">3.10</span> <span class="content"><code class="highlight"><span class="n">mismatch</span></code> [mismatch]</span></a>
-      <li><a href="#equal"><span class="secno">3.11</span> <span class="content"><code class="highlight"><span class="n">equal</span></code> [alg.equal]</span></a>
-      <li><a href="#search"><span class="secno">3.12</span> <span class="content"><code class="highlight"><span class="n">search</span></code> [alg.search]</span></a>
-      <li><a href="#copy_if"><span class="secno">3.13</span> <span class="content"><code class="highlight"><span class="n">copy_if</span></code> [alg.copy]</span></a>
-      <li><a href="#transform"><span class="secno">3.14</span> <span class="content"><code class="highlight"><span class="n">transform</span></code> [alg.transform]</span></a>
-      <li><a href="#replace_if-algreplace"><span class="secno">3.15</span> <span class="content"><code class="highlight"><span class="n">replace_if</span></code> [alg.replace]</span></a>
-      <li><a href="#replace_copy_if-algreplace"><span class="secno">3.16</span> <span class="content"><code class="highlight"><span class="n">replace_copy_if</span></code> [alg.replace]</span></a>
-      <li><a href="#remove_if-algremove"><span class="secno">3.17</span> <span class="content"><code class="highlight"><span class="n">remove_if</span></code> [alg.remove]</span></a>
-      <li><a href="#remove_copy_if-algremove"><span class="secno">3.18</span> <span class="content"><code class="highlight"><span class="n">remove_copy_if</span></code> [alg.remove]</span></a>
-      <li><a href="#unique-algunique"><span class="secno">3.19</span> <span class="content"><code class="highlight"><span class="n">unique</span></code> [alg.unique]</span></a>
-      <li><a href="#unique_copy-algunique"><span class="secno">3.20</span> <span class="content"><code class="highlight"><span class="n">unique_copy</span></code> [alg.unique]</span></a>
-      <li><a href="#partition-algpartition"><span class="secno">3.21</span> <span class="content"><code class="highlight"><span class="n">partition</span></code> [alg.partition]</span></a>
-      <li><a href="#sort"><span class="secno">3.22</span> <span class="content"><code class="highlight"><span class="n">sort</span></code> [alg.sort]</span></a>
-      <li><a href="#stable_sort-stablesort"><span class="secno">3.23</span> <span class="content"><code class="highlight"><span class="n">stable_sort</span></code> [stable.sort]</span></a>
-     </ol>
-    <li><a href="#word"><span class="secno">4</span> <span class="content">Proposed Wording</span></a>
+    <li><a href="#word"><span class="secno">2</span> <span class="content">Proposed Wording</span></a>
+    <li><a href="#discuss"><span class="secno">3</span> <span class="content">Discussion and Justification</span></a>
     <li>
      <a href="#references"><span class="secno"></span> <span class="content">References</span></a>
      <ol class="toc">
       <li><a href="#informative"><span class="secno"></span> <span class="content">Informative References</span></a>
      </ol>
-    <li><a href="#issues-index"><span class="secno"></span> <span class="content">Issues Index</span></a>
    </ol>
   </nav>
   <main>
@@ -1496,91 +1442,29 @@ Possible extra rowspan handling
     <p>Proposed Change: Add explicit allowance for non-sequenced policies to copy the objects
 they work on.</p>
    </blockquote>
-   <p>Discussion in SG1 at Issaquah on this comment led to the suggestion that, at minimum, wording should be added to some or all of the parallel algorithms forbidding the reliance on the <code class="highlight"><span class="n">addressof</span></code> operation for arguments to the function objects passed to a <em>parallel algorithm</em> [algorithms.parallel.defns].  A straw pole revealed unanimous agreement that a paper exploring this idea should be written.</p>
-   <p>In particular, it was suggested that we examine the consequences of expanding or elaborating on the clause in [algorithms.parallel.user] to include language relating to the forbidding of reliance on the <code class="highlight"><span class="n">addressof</span></code> operator for arguments to certain function objects (particularly the ones called out in this section).</p>
-   <h2 class="heading settled" data-level="2" id="appr"><span class="secno">2. </span><span class="content">Approach</span><a class="self-link" href="#appr"></a></h2>
-   <p>In general, the consequences of this new restriction should be considered in the context of each  overloaded library function in <a data-link-type="biblio" href="#biblio-n4604">[N4604]</a> that takes an execution policy and at least one user-defined function object.  For many of these, we will attempt to propose at least two options, one that tries to be more conservative with respect to potential for different behavior compared to the serial (i.e., <code class="highlight"><span class="n">ExecutionPolicy</span></code>-free) overload, and one that tries to be more flexible with respect to implementer freedom, but allowing for different behavior from the serial overload in some (potentially far-fetched) cases.  For some algorithms, we may also propose one or more middle-ground options.</p>
-   <p class="issue" id="issue-8f436473"><a class="self-link" href="#issue-8f436473"></a> TODO (perhaps?) consider the implications of restricting the <code class="highlight"><span class="n">addressof</span></code> forbiddance to arguments of <em>trivially copyable</em> type (or reference to <em>trivially copyable</em> type)</p>
-   <h2 class="heading settled" data-level="3" id="discuss"><span class="secno">3. </span><span class="content">Discussion</span><a class="self-link" href="#discuss"></a></h2>
-   <p class="issue" id="issue-7ab40449"><a class="self-link" href="#issue-7ab40449"></a> TODO broad discussion of the half-dozen or so general categories of use cases</p>
-   <p class="issue" id="issue-b99af3b3"><a class="self-link" href="#issue-b99af3b3"></a> TODO discuss the general problem that, even in the algorithms that do not take function object arguments, <code class="highlight"><span class="k">operator</span><span class="o">=</span><span class="o">=</span></code> or <code class="highlight"><span class="k">operator</span><span class="o">!</span><span class="o">=</span></code> (for instance) could rely on the address of their arguments.</p>
-   <h3 class="heading settled" data-level="3.1" id="all_of"><span class="secno">3.1. </span><span class="content"><code class="highlight"><span class="n">all_of</span></code> [alg.all_of]</span><a class="self-link" href="#all_of"></a></h3>
-   <p>The sorts of <code class="highlight"><span class="n">Predicate</span></code> function objects that could be passed to <code class="highlight"><span class="n">all_of</span></code> that could rely on the address of the argument are very esoteric.  One use case that could have a <code class="highlight"><span class="n">Predicate</span></code> reliant on the <code class="highlight"><span class="n">addressof</span></code> the argument would be one that takes a modulus of that address to query consistency in the alignment of all items in a range (though there are probably better ways to do this).</p>
-   <p>Another use would be to check if all of the objects in a range fall in between two addresses (for instance, to copy all elements with one <code class="highlight"><span class="n">memcpy</span></code> invocation).</p>
-   <h4 class="heading settled" data-level="3.1.1" id="conservative-approach"><span class="secno">3.1.1. </span><span class="content">Conservative approach</span><a class="self-link" href="#conservative-approach"></a></h4>
-    It would potentially be sufficient to preserve the alignment of the first element in the input range as well as the relative offsets of addresses of the other elements compared to the first, though this is unlikely to be widely important.  The second possible corner case would not necessarily be addressed by this approach. 
-   <h4 class="heading settled" data-level="3.1.2" id="flexible-approach"><span class="secno">3.1.2. </span><span class="content">Flexible approach</span><a class="self-link" href="#flexible-approach"></a></h4>
-    Forbid any reliance on <code class="highlight"><span class="n">addressof</span></code> operations on the argument to <code class="highlight"><span class="n">Predicate</span></code>. 
-   <h3 class="heading settled" data-level="3.2" id="any_of"><span class="secno">3.2. </span><span class="content"><code class="highlight"><span class="n">any_of</span></code> [alg.any_of]</span><a class="self-link" href="#any_of"></a></h3>
-    Similar to <a href="#all_of">§3.1 all_of [alg.all_of]</a>. 
-   <h3 class="heading settled" data-level="3.3" id="none_of"><span class="secno">3.3. </span><span class="content"><code class="highlight"><span class="n">none_of</span></code> [alg.none_of]</span><a class="self-link" href="#none_of"></a></h3>
-    Similar to <a href="#all_of">§3.1 all_of [alg.all_of]</a>. 
-   <h3 class="heading settled" data-level="3.4" id="foreach"><span class="secno">3.4. </span><span class="content"><code class="highlight"><span class="n">for_each</span></code> [alg.foreach]</span><a class="self-link" href="#foreach"></a></h3>
-    The function object passed to <code class="highlight"><span class="n">for_each</span></code> is not included in [algorithms.parallel.user], therefore the proposed changes would not apply to <code class="highlight"><span class="n">for_each</span></code>. 
-   <h3 class="heading settled" data-level="3.5" id="find"><span class="secno">3.5. </span><span class="content"><code class="highlight"><span class="n">find</span></code> [alg.find]</span><a class="self-link" href="#find"></a></h3>
-    The algorithms <code class="highlight"><span class="n">find_if</span></code> and <code class="highlight"><span class="n">find_if_not</span></code> both take <code class="highlight"><span class="n">Predicate</span></code> arguments.  In addition to the use cases in <a href="#all_of">§3.1 all_of [alg.all_of]</a> where the user might want to find an object with an address outside of a particular range or with a particular alignment, it may be desirable to check the containment of a non-equality-comparable ([equalitycomparable] in <a data-link-type="biblio" href="#biblio-n4604">[N4604]</a>) object in a given range.  We do not see an easy way to provide a conservative approach that preserves the correct behavior in this case. 
-   <h4 class="heading settled" data-level="3.5.1" id="conservative-approach0"><span class="secno">3.5.1. </span><span class="content">Conservative approach</span><a class="self-link" href="#conservative-approach0"></a></h4>
-    Under the same constraints as <a href="#all_of">§3.1 all_of [alg.all_of]</a>, some (but not all) possible corner cases could be handled.  There is no easy way that we can conceive of to constrain the proposed restriction to enable the non-equality-comparable containment use case.  It may be worth excluding <code class="highlight"><span class="n">find_</span><span class="o">*</span></code> functions from the <code class="highlight"><span class="n">addressof</span></code> restriction for this reason. 
-   <h4 class="heading settled" data-level="3.5.2" id="flexible-approach0"><span class="secno">3.5.2. </span><span class="content">Flexible approach</span><a class="self-link" href="#flexible-approach0"></a></h4>
-    Forbid any reliance on <code class="highlight"><span class="n">addressof</span></code> operations on the argument to <code class="highlight"><span class="n">Predicate</span></code>. <code class="highlight"><span class="n">Predicate</span></code>s like compare-by-address (as described above) would need to be run in serial or with a layer of indirection until more user-defined flexibility on the <code class="highlight"><span class="n">addressof</span></code> behavior could be added to the language by some means. 
-   <h3 class="heading settled" data-level="3.6" id="find_end"><span class="secno">3.6. </span><span class="content"><code class="highlight"><span class="n">find_end</span></code> [alg.find.end]</span><a class="self-link" href="#find_end"></a></h3>
-    Since <code class="highlight"><span class="n">find_end</span></code> operates on two different sequences, the analogs of the use cases in <a href="#find">§3.5 find [alg.find]</a> constitute a lot more esoteric use cases.  Whereas it is easy to envision a <code class="highlight"><span class="n">Predicate</span></code> to <code class="highlight"><span class="n">find_if</span></code> that is, for instance, a lambda that captures a reference to a desired value and compares its address to that of the argument passed to <code class="highlight"><span class="n">Predicate</span></code>, the analogous use case that takes a <code class="highlight"><span class="n">BinaryPredicate</span></code> is more likely to do something like compare the addresses of the arguments to <em>each other</em>, which is much more easily handled by the conservative approach 
-   <h4 class="heading settled" data-level="3.6.1" id="conservative-approach1"><span class="secno">3.6.1. </span><span class="content">Conservative approach</span><a class="self-link" href="#conservative-approach1"></a></h4>
-    For <code class="highlight"><span class="n">find_end</span></code> and most other algorithms that take a <code class="highlight"><span class="n">BinaryPredicate</span></code> function argument, it could be reasonable to provide a restriction intermediate to that of <a href="#find">§3.5 find [alg.find]</a> in which the relationship between the addresses of the arguments in any given call to the <code class="highlight"><span class="n">BinaryPredicate</span></code> remains unchanged (but allow the relationships between addresses of arguments in different calls to be completely unconstrained). 
-   <h4 class="heading settled" data-level="3.6.2" id="less-conservative-approach"><span class="secno">3.6.2. </span><span class="content">Less conservative approach</span><a class="self-link" href="#less-conservative-approach"></a></h4>
-    A slightly weaker restriction that still covers a lot of the use cases is to require only that the equality relationship on the addresses of the arguments be preserved.  This gives the implementation much more flexibility since it need not allocate memory the side of the distance between the argument addresses in order to make the call safely.  This approach also covers most of the use cases for most of the algorithms requiring <code class="highlight"><span class="n">BinaryPredicate</span></code> function objects. 
-   <h4 class="heading settled" data-level="3.6.3" id="flexible-approach1"><span class="secno">3.6.3. </span><span class="content">Flexible approach</span><a class="self-link" href="#flexible-approach1"></a></h4>
-    The flexible approach of completely forbidding <code class="highlight"><span class="n">addressof</span></code> operations on arguments to <code class="highlight"><span class="n">find_end</span></code> and most other algorithms that take a <code class="highlight"><span class="n">BinaryPredicate</span></code> has pretty much the same drawbacks as the other algorithms, with the caveat that the conservative approach is less restrictive and exposes much of the functionality (thus making the flexible approach slightly less appealing). 
-   <h3 class="heading settled" data-level="3.7" id="find_first"><span class="secno">3.7. </span><span class="content"><code class="highlight"><span class="n">find_first</span></code> [alg.find.first.of]</span><a class="self-link" href="#find_first"></a></h3>
-    Similar to <a href="#find_end">§3.6 find_end [alg.find.end]</a> 
-   <h3 class="heading settled" data-level="3.8" id="adjacent_find"><span class="secno">3.8. </span><span class="content"><code class="highlight"><span class="n">adjacent_find</span></code> [alg.adjacent.find]</span><a class="self-link" href="#adjacent_find"></a></h3>
-    Similar to <a href="#find_end">§3.6 find_end [alg.find.end]</a> 
-   <h3 class="heading settled" data-level="3.9" id="count"><span class="secno">3.9. </span><span class="content"><code class="highlight"><span class="n">count</span></code> [alg.count]</span><a class="self-link" href="#count"></a></h3>
-    The major concerns surrounding <code class="highlight"><span class="n">count</span></code> are similar to those of <a href="#any_of">§3.2 any_of [alg.any_of]</a> 
-   <h3 class="heading settled" data-level="3.10" id="mismatch"><span class="secno">3.10. </span><span class="content"><code class="highlight"><span class="n">mismatch</span></code> [mismatch]</span><a class="self-link" href="#mismatch"></a></h3>
-    Similar to <a href="#find_end">§3.6 find_end [alg.find.end]</a> 
-   <h3 class="heading settled" data-level="3.11" id="equal"><span class="secno">3.11. </span><span class="content"><code class="highlight"><span class="n">equal</span></code> [alg.equal]</span><a class="self-link" href="#equal"></a></h3>
-    Similar to <a href="#find_end">§3.6 find_end [alg.find.end]</a> 
-   <h3 class="heading settled" data-level="3.12" id="search"><span class="secno">3.12. </span><span class="content"><code class="highlight"><span class="n">search</span></code> [alg.search]</span><a class="self-link" href="#search"></a></h3>
-    Similar to <a href="#find_end">§3.6 find_end [alg.find.end]</a> 
-   <h3 class="heading settled" data-level="3.13" id="copy_if"><span class="secno">3.13. </span><span class="content"><code class="highlight"><span class="n">copy_if</span></code> [alg.copy]</span><a class="self-link" href="#copy_if"></a></h3>
-    Similar to <a href="#all_of">§3.1 all_of [alg.all_of]</a>, except that the alignment argument is a bit weaker here. 
-   <h3 class="heading settled" data-level="3.14" id="transform"><span class="secno">3.14. </span><span class="content"><code class="highlight"><span class="n">transform</span></code> [alg.transform]</span><a class="self-link" href="#transform"></a></h3>
-    We could not come up with a reasonable use case for which <code class="highlight"><span class="n">transform</span></code> would need a <code class="highlight"><span class="n">UnaryOperation</span></code> that depends on the address of its argument. 
-   <h3 class="heading settled" data-level="3.15" id="replace_if-algreplace"><span class="secno">3.15. </span><span class="content"><code class="highlight"><span class="n">replace_if</span></code> [alg.replace]</span><a class="self-link" href="#replace_if-algreplace"></a></h3>
-    Similar to <a href="#find">§3.5 find [alg.find]</a> 
-   <h3 class="heading settled" data-level="3.16" id="replace_copy_if-algreplace"><span class="secno">3.16. </span><span class="content"><code class="highlight"><span class="n">replace_copy_if</span></code> [alg.replace]</span><a class="self-link" href="#replace_copy_if-algreplace"></a></h3>
-    Similar to <a href="#find">§3.5 find [alg.find]</a> 
-   <h3 class="heading settled" data-level="3.17" id="remove_if-algremove"><span class="secno">3.17. </span><span class="content"><code class="highlight"><span class="n">remove_if</span></code> [alg.remove]</span><a class="self-link" href="#remove_if-algremove"></a></h3>
-    Similar to <a href="#find">§3.5 find [alg.find]</a> 
-   <h3 class="heading settled" data-level="3.18" id="remove_copy_if-algremove"><span class="secno">3.18. </span><span class="content"><code class="highlight"><span class="n">remove_copy_if</span></code> [alg.remove]</span><a class="self-link" href="#remove_copy_if-algremove"></a></h3>
-    Similar to <a href="#find">§3.5 find [alg.find]</a> 
-   <h3 class="heading settled" data-level="3.19" id="unique-algunique"><span class="secno">3.19. </span><span class="content"><code class="highlight"><span class="n">unique</span></code> [alg.unique]</span><a class="self-link" href="#unique-algunique"></a></h3>
-    Similar to <a href="#find_end">§3.6 find_end [alg.find.end]</a> 
-   <h3 class="heading settled" data-level="3.20" id="unique_copy-algunique"><span class="secno">3.20. </span><span class="content"><code class="highlight"><span class="n">unique_copy</span></code> [alg.unique]</span><a class="self-link" href="#unique_copy-algunique"></a></h3>
-    Similar to <a href="#find_end">§3.6 find_end [alg.find.end]</a> 
-   <h3 class="heading settled" data-level="3.21" id="partition-algpartition"><span class="secno">3.21. </span><span class="content"><code class="highlight"><span class="n">partition</span></code> [alg.partition]</span><a class="self-link" href="#partition-algpartition"></a></h3>
-    <code class="highlight"><span class="n">partition</span></code> and related functions (<code class="highlight"><span class="n">is_partitioned</span></code>, <code class="highlight"><span class="n">stable_partition</span></code>, <code class="highlight"><span class="n">partition_copy</span></code>) have a specific reasonable use case: radix sort binning.  We cannot come up with a reasonable conservative approach that works for this use case. 
-   <h3 class="heading settled" data-level="3.22" id="sort"><span class="secno">3.22. </span><span class="content"><code class="highlight"><span class="n">sort</span></code> [alg.sort]</span><a class="self-link" href="#sort"></a></h3>
-    The most compelling use case for <code class="highlight"><span class="n">sort</span></code> with a <code class="highlight"><span class="n">Compare</span></code> operation that relies on the addresses of its arguments is the sorting of locks for the purpose of deadlock avoidance.  We acknowledge that this is a legitimate use case and therefore suggest we consider explicitly excluding <code class="highlight"><span class="n">sort</span></code> from the <code class="highlight"><span class="n">addressof</span></code> restriction.  The conservative approach suggested for <a href="#find_end">§3.6 find_end [alg.find.end]</a> and other algorithms that take a <code class="highlight"><span class="n">BinaryPredicate</span></code> would cover this use case, though, as well as most of the other cases that take <code class="highlight"><span class="n">Compare</span></code> function objects. 
-   <h3 class="heading settled" data-level="3.23" id="stable_sort-stablesort"><span class="secno">3.23. </span><span class="content"><code class="highlight"><span class="n">stable_sort</span></code> [stable.sort]</span><a class="self-link" href="#stable_sort-stablesort"></a></h3>
-    Similar to <a href="#sort">§3.22 sort [alg.sort]</a> 
-   <p><strong class="advisement"> There are more algorithms that could be considered in this section, but we feel we’ve covered most of the broad categories of use cases.  If SG1 feels it is necessary, we can extend this to include subsections for the rest of the parallel algorithms in <a data-link-type="biblio" href="#biblio-n4604">[N4604]</a></strong></p>
-   <h2 class="heading settled" data-level="4" id="word"><span class="secno">4. </span><span class="content">Proposed Wording</span><a class="self-link" href="#word"></a></h2>
-   <p>Change paragraph 1 of [algorithms.parallel.user] to:</p>
+   <p>Discussion in SG1 at Issaquah on this comment led to the suggestion that, at minimum, wording should be added to some or all of the parallel algorithms allowing the implementation to make copies of arguments to the function objects passed to a <em>parallel algorithm</em> [algorithms.parallel.defns].  A straw pole revealed unanimous agreement that a paper exploring this idea should be written.</p>
+   <p>In particular, it was suggested that we examine the consequences of expanding or elaborating on the clause in [algorithms.parallel.user] to include language allowing the implementation to make copies of arguments to certain function objects under certain circumstances.</p>
+   <h2 class="heading settled" data-level="2" id="word"><span class="secno">2. </span><span class="content">Proposed Wording</span><a class="self-link" href="#word"></a></h2>
+   <p>With discussion to follow below (<a href="#discuss">§3 Discussion and Justification</a>), we recommend that the committee change paragraph 1 of [algorithms.parallel.user] to:</p>
    <blockquote>
     <p>
      Function objects passed into parallel algorithms as objects of type <code class="highlight"><span class="n">Predicate</span></code>, <code class="highlight"><span class="n">BinaryPredicate</span></code>, <code class="highlight"><span class="n">Compare</span></code>, 
      <ins>UnaryOperation</ins>
-      and <code class="highlight"><span class="n">BinaryOperation</span></code> shall not directly or indirectly modify objects via their arguments 
-     <ins>and maybe a copy. </ins>
+      and <code class="highlight"><span class="n">BinaryOperation</span></code> 
+     <ins>and the operators used by the analogous overloads to these parallel algorithms that could be formed by the invocation with the specified default predicate or operation (where applicable)</ins>
+      shall not directly or indirectly modify objects via their arguments
+     <ins>, which may be a copy of the original object(s) from the range(s) on which the algorithm operates.</ins>
     </p>
+    <ins>Copy operations for this purpose must have no observable effects differing from if the argument were of <em>trivially copyable</em> type ([basic.types]) and the trivial copy constructor were used to construct the argument from the original object.</ins>
+    <ins>[<em>Note:</em> Programmers for whom the object identity of the arguments to these function objects is important should consider using a wrapping iterator that returns a noncopied implementation object such as <code class="highlight"><span class="n">reference_wrapper</span><span class="o">&lt;</span><span class="n">T</span><span class="o">></span></code> [refwrap] or some equivalent solution. -<em>end note</em>]</ins>
    </blockquote>
-   <p class="issue" id="issue-42694933"><a class="self-link" href="#issue-42694933"></a> TODO: wording for specific sections where blanket change doesn’t make sense, as recommended by SG1 following discussion
-issue: clarify what is restricted: can we take the address, or the result cannnot be relied on
-issue: can we change it to effect of copy? can say the arguments may be a copy of the original, then avoid side effects of copy and move constructors.
-issue: unify compare algorithm section starting with sort, compare can’t modify the arguments
-issue: no observable effect different from trivially copyable</p>
+   <h2 class="heading settled" data-level="3" id="discuss"><span class="secno">3. </span><span class="content">Discussion and Justification</span><a class="self-link" href="#discuss"></a></h2>
+   <p>For just about all of the algorithms, the primary concern is that a predicate or comparison operator would rely on some property of the arguments’ addresses being consistent, whether in an absolute sense or a relative sense.  It is important to note that in every case, the parallel algorithm <em>could</em> still be used with a predicate reliant on the address if a layer of indirection that preserves the pertinent portion of the object’s address information (e.g., through a wrapping iterator).  Thus, it is not the actual breadth of capabilities provided by the parallel algorithm specifications that is being considered here; rather, it is the trade-offs between the cost of requiring the user to implement such a layer of indirection and the benefits of implementation flexibility with greater accessibility to performance optimizations.</p>
+   <p>In most cases, the algorithms relevant to the wording in <a href="#word">§2 Proposed Wording</a> that require the same type of function object pose similar concerns to each other.  Of greatest concern are those functions accepting <code class="highlight"><span class="n">Predicate</span></code> function objects.  A typical case is <code class="highlight"><span class="n">find_if</span></code> ([alg.find]), where the function object could want to check for equality with a known object by doing address-wise comparison.  However, it is not uncommon for these use cases to have some other need for the kind of indirection needed to make this work (for instance, in-place sorting by address).</p>
+   <p>The first case raised for discussion in SG1 taking a <code class="highlight"><span class="n">Compare</span></code> function object was <code class="highlight"><span class="n">sort</span></code>.  However, given that the standard library implementation of this algorithm is in-place, comparison based on the address of the arguments would be nonsensical, given that the objects’ addresses would change as the sort progresses.  For the non-modifying parallel algorithms that use <code class="highlight"><span class="n">Compare</span></code> (such as <code class="highlight"><span class="n">min_element</span></code>, [alg.min.max]), the conceivable use cases for the addresses of the arguments to <code class="highlight"><span class="n">Compare</span></code> are esoteric enough that the imposition of an indirection requirement is not onerous.</p>
+   <p>Most of the algorithms that take a <code class="highlight"><span class="n">BinaryPredicate</span></code> argument are even less problematic that the first two.  An example here would be <code class="highlight"><span class="n">unique</span></code> [alg.unique].  We considered an amendment of the wording in <a href="#word">§2 Proposed Wording</a> for the case of <code class="highlight"><span class="n">BinaryPredicate</span></code> that would require the relationship (in terms of total ordering) between the addresses of the arguments to be the same as in the original objects, but we decided against this in the interest of simplicity.</p>
+   <p>The least problematic cases are those that take a <code class="highlight"><span class="n">UnaryOperation</span></code> or <code class="highlight"><span class="n">BinaryOperation</span></code> function object (note that <code class="highlight"><span class="n">for_each</span></code> [alg.foreach] is excluded from this, since it takes an argument with the template parameter name <code class="highlight"><span class="n">Function</span></code> instead).  An example of this is <code class="highlight"><span class="n">transform</span></code> [alg.transform].  Since these take an argument (or two arguments) and return an object by value (for which the function object has no control over the address once copied), it is hard to imagine many use cases where the object identity of the arguments to these function objects is important, since that of the return value cannot be.  We do not claim that there are no use cases here affected by the proposed change, but it is a pretty reasonable argument that the potential benefits in terms of implementation flexibility outweigh the inconvenience of requiring indirection in these corner cases.</p>
+   <p>A wide variety of options were considered with respect to the requirements on the copyability of the objects in question for the wording suggested above.  It was noted that virtually any non-trivial copy constructor would either require the compiler to serialize the copy operations or prove the thread-safety of the copy constructor, which could be in another translation unit.  We settled on the <em>as-if</em> style wording given above to allow the implementation to examine the side-effects of a user-provided copy constructor if it desires and to prevent a scenario in which the user attempts to assert control over the copying behavior of the algorithm implementation by adding a copy constructor equivalent to the trivial one (which would be arcane and thus undesirable).</p>
   </main>
 <script>
 (function() {
@@ -1714,19 +1598,6 @@ issue: no observable effect different from trivially copyable</p>
   <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
   <h3 class="no-num no-ref heading settled" id="informative"><span class="content">Informative References</span><a class="self-link" href="#informative"></a></h3>
   <dl>
-   <dt id="biblio-n4604">[N4604]
-   <dd>Richard Smith. <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/n4604.pdf">C++17 CD Ballot Document</a>. 12 July 2016. URL: <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/n4604.pdf">http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/n4604.pdf</a>
    <dt id="biblio-p0488r0">[P0488R0]
    <dd>Barry Hedquist. <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0488r0.pdf">WG21 Working paper: NB Comments, ISO/IEC CD 14882</a>. 18 October 2016. URL: <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0488r0.pdf">http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0488r0.pdf</a>
   </dl>
-  <h2 class="no-num no-ref heading settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
-  <div style="counter-reset:issue">
-   <div class="issue"> TODO (perhaps?) consider the implications of restricting the <code class="highlight"><span class="n">addressof</span></code> forbiddance to arguments of <em>trivially copyable</em> type (or reference to <em>trivially copyable</em> type)<a href="#issue-8f436473"> ↵ </a></div>
-   <div class="issue"> TODO broad discussion of the half-dozen or so general categories of use cases<a href="#issue-7ab40449"> ↵ </a></div>
-   <div class="issue"> TODO discuss the general problem that, even in the algorithms that do not take function object arguments, <code class="highlight"><span class="k">operator</span><span class="o">=</span><span class="o">=</span></code> or <code class="highlight"><span class="k">operator</span><span class="o">!</span><span class="o">=</span></code> (for instance) could rely on the address of their arguments.<a href="#issue-b99af3b3"> ↵ </a></div>
-   <div class="issue"> TODO: wording for specific sections where blanket change doesn’t make sense, as recommended by SG1 following discussion
-issue: clarify what is restricted: can we take the address, or the result cannnot be relied on
-issue: can we change it to effect of copy? can say the arguments may be a copy of the original, then avoid side effects of copy and move constructors.
-issue: unify compare algorithm section starting with sort, compare can’t modify the arguments
-issue: no observable effect different from trivially copyable<a href="#issue-42694933"> ↵ </a></div>
-  </div>

@@ -1,17 +1,16 @@
 <pre class='metadata'>
-Title: Restricting address reliance of function objects given to parallel algorithms in response to CH11
+Title: Allowing copies as arguments to function objects given to parallel algorithms in response to CH11
 Shortname: D0518
 Revision: 0
 Audience: SG1
 Status: D
 Group: WG21
-Warning: Not Ready
 URL: http://wg21.link/p0518
 Editor: David S. Hollman, Sandia National Labs, dshollm@sandia.gov
 Editor: Jonathan Lifflander, Sandia National Labs, jliffla@sandia.gov
 Editor: Michael Wong, Codeplay, michael@codeplay.com
 Editor: Detlef Vollmann, Vollmann Engineering, dv@vollmann.ch
-Abstract: Address NB comment CH 11 in [[P0488R0]]
+Abstract: This paper addresses NB comment CH 11 in [[P0488R0]]
 Date: 2016-11-09
 Markup Shorthands: markdown yes
 Toggle Diffs: yes
@@ -32,34 +31,54 @@ they work on.
 
 </blockquote>
 
-Discussion in SG1 at Issaquah on this comment led to the suggestion that, at minimum, wording should be added to some or all of the parallel algorithms forbidding the reliance on the `addressof` operation for arguments to the function objects passed to a *parallel algorithm* [algorithms.parallel.defns].  A straw pole revealed unanimous agreement that a paper exploring this idea should be written.
+Discussion in SG1 at Issaquah on this comment led to the suggestion that, at minimum, wording should be added to some or all of the parallel algorithms allowing the implementation to make copies of arguments to the function objects passed to a *parallel algorithm* [algorithms.parallel.defns].  A straw pole revealed unanimous agreement that a paper exploring this idea should be written.
 
-In particular, it was suggested that we examine the consequences of expanding or elaborating on the clause in [algorithms.parallel.user] to include language relating to the forbidding of reliance on the `addressof` operator for arguments to certain function objects (particularly the ones called out in this section).
+In particular, it was suggested that we examine the consequences of expanding or elaborating on the clause in [algorithms.parallel.user] to include language allowing the implementation to make copies of arguments to certain function objects under certain circumstances.
 
-Approach {#appr}
-========
+Proposed Wording {#word}
+==============================
 
-In general, the consequences of this new restriction should be considered in the context of each  overloaded library function in [[N4604]] that takes an execution policy and at least one user-defined function object.  For many of these, we will attempt to propose at least two options, one that tries to be more conservative with respect to potential for different behavior compared to the serial (i.e., `ExecutionPolicy`-free) overload, and one that tries to be more flexible with respect to implementer freedom, but allowing for different behavior from the serial overload in some (potentially far-fetched) cases.  For some algorithms, we may also propose one or more middle-ground options.
+With discussion to follow below ([[#discuss]]), we recommend that the committee change paragraph 1 of [algorithms.parallel.user] to:
 
+<blockquote>
+
+Function objects passed into parallel algorithms as objects of type `Predicate`, `BinaryPredicate`, `Compare`, <ins>UnaryOperation</ins> and `BinaryOperation` <ins>and the operators used by the analogous overloads to these parallel algorithms that could be formed by the invocation with the specified default predicate or operation (where applicable)</ins> shall not directly or indirectly modify objects via their arguments<ins>, which may be a copy of the original object(s) from the range(s) on which the algorithm operates.</ins>
+
+<ins>Copy operations for this purpose must have no observable effects differing from if the argument were of *trivially copyable* type ([basic.types]) and the trivial copy constructor were used to construct the argument from the original object.</ins>
+
+<ins>[*Note:* Programmers for whom the object identity of the arguments to these function objects is important should consider using a wrapping iterator that returns a noncopied implementation object such as `reference_wrapper<T>` [refwrap] or some equivalent solution. -*end note*]</ins>
+
+
+</blockquote>
 
 <!---
-Potential Blanket Restrictions {#blanket}
-------------------------------
+issue: TODO: wording for specific sections where blanket change doesn't make sense, as recommended by SG1 following discussion
 
-TODO potentially omit any discussion of copying
+issue: clarify what is restricted: can we take the address, or the result cannnot be relied on
 
-The primary purpose of the amendments proposed herein is to allow implementers the freedom to copy values to be passed to the user-defined function objects in order to enable certain performance optimizations.  It was generally agreed in the Issaquah discussion that this very quickly becomes counterproductive in the case of objects with non-trivial copy constructors (referencing *trivially copyable* from clause 9, paragraph 6).  Thus, a safer definition of these restrictions would restrict the `addressof` forbiddance to arguments of *trivially copyable* type.  This has the advantage that inconsistency between the 
+issue: can we change it to effect of copy? can say the arguments may be a copy of the original, then avoid side effects of copy and move constructors.
+
+issue: unify compare algorithm section starting with sort, compare can't modify the arguments
+
+issue: no observable effect different from trivially copyable
 -->
 
-issue: TODO (perhaps?) consider the implications of restricting the `addressof` forbiddance to arguments of *trivially copyable* type (or reference to *trivially copyable* type)
-
-Discussion {#discuss}
+Discussion and Justification {#discuss}
 ==========
 
-issue: TODO broad discussion of the half-dozen or so general categories of use cases
+For just about all of the algorithms, the primary concern is that a predicate or comparison operator would rely on some property of the arguments’ addresses being consistent, whether in an absolute sense or a relative sense.  It is important to note that in every case, the parallel algorithm *could* still be used with a predicate reliant on the address if a layer of indirection that preserves the pertinent portion of the object’s address information (e.g., through a wrapping iterator).  Thus, it is not the actual breadth of capabilities provided by the parallel algorithm specifications that is being considered here; rather, it is the trade-offs between the cost of requiring the user to implement such a layer of indirection and the benefits of implementation flexibility with greater accessibility to performance optimizations.
 
-issue: TODO discuss the general problem that, even in the algorithms that do not take function object arguments, `operator==` or `operator!=` (for instance) could rely on the address of their arguments.
+In most cases, the algorithms relevant to the wording in [[#word]] that require the same type of function object pose similar concerns to each other.  Of greatest concern are those functions accepting `Predicate` function objects.  A typical case is `find_if` ([alg.find]), where the function object could want to check for equality with a known object by doing address-wise comparison.  However, it is not uncommon for these use cases to have some other need for the kind of indirection needed to make this work (for instance, in-place sorting by address).
 
+The first case raised for discussion in SG1 taking a `Compare` function object was `sort`.  However, given that the standard library implementation of this algorithm is in-place, comparison based on the address of the arguments would be nonsensical, given that the objects’ addresses would change as the sort progresses.  For the non-modifying parallel algorithms that use `Compare` (such as `min_element`, [alg.min.max]), the conceivable use cases for the addresses of the arguments to `Compare` are esoteric enough that the imposition of an indirection requirement is not onerous.
+
+Most of the algorithms that take a `BinaryPredicate` argument are even less problematic that the first two.  An example here would be `unique` [alg.unique].  We considered an amendment of the wording in [[#word]] for the case of `BinaryPredicate` that would require the relationship (in terms of total ordering) between the addresses of the arguments to be the same as in the original objects, but we decided against this in the interest of simplicity.
+
+The least problematic cases are those that take a `UnaryOperation` or `BinaryOperation` function object (note that `for_each` [alg.foreach] is excluded from this, since it takes an argument with the template parameter name `Function` instead).  An example of this is `transform` [alg.transform].  Since these take an argument (or two arguments) and return an object by value (for which the function object has no control over the address once copied), it is hard to imagine many use cases where the object identity of the arguments to these function objects is important, since that of the return value cannot be.  We do not claim that there are no use cases here affected by the proposed change, but it is a pretty reasonable argument that the potential benefits in terms of implementation flexibility outweigh the inconvenience of requiring indirection in these corner cases.
+
+A wide variety of options were considered with respect to the requirements on the copyability of the objects in question for the wording suggested above.  It was noted that virtually any non-trivial copy constructor would either require the compiler to serialize the copy operations or prove the thread-safety of the copy constructor, which could be in another translation unit.  We settled on the *as-if* style wording given above to allow the implementation to examine the side-effects of a user-provided copy constructor if it desires and to prevent a scenario in which the user attempts to assert control over the copying behavior of the algorithm implementation by adding a copy constructor equivalent to the trivial one (which would be arcane and thus undesirable).
+
+<!--
 `all_of` [alg.all_of] {#all_of}
 ---------------------
 
@@ -177,23 +196,8 @@ The most compelling use case for `sort` with a `Compare` operation that relies o
 Similar to [[#sort]]
 
 advisement: There are more algorithms that could be considered in this section, but we feel we’ve covered most of the broad categories of use cases.  If SG1 feels it is necessary, we can extend this to include subsections for the rest of the parallel algorithms in [[N4604]]
+-->
 
-Proposed Wording {#word}
-================
-
-Change paragraph 1 of [algorithms.parallel.user] to:
-
-<blockquote>
-
-Function objects passed into parallel algorithms as objects of type `Predicate`, `BinaryPredicate`, `Compare`, <ins>UnaryOperation</ins> and `BinaryOperation` shall not directly or indirectly modify objects via their arguments <ins>and maybe a copy. </ins>
-
-</blockquote>
-
-issue: TODO: wording for specific sections where blanket change doesn't make sense, as recommended by SG1 following discussion
-issue: clarify what is restricted: can we take the address, or the result cannnot be relied on
-issue: can we change it to effect of copy? can say the arguments may be a copy of the original, then avoid side effects of copy and move constructors.
-issue: unify compare algorithm section starting with sort, compare can't modify the arguments
-issue: no observable effect different from trivially copyable
 
 
 
