@@ -1454,7 +1454,9 @@ they work on.</p>
     <ins>and the operators used by the analogous overloads to these parallel algorithms that could be formed by the invocation with the specified default predicate or operation (where applicable)</ins>
      shall not directly or indirectly modify objects via their arguments
     <ins>, which may be a copy of the original object(s) from the range(s) on which the algorithm operates.</ins>
+    <p></p>
     <ins>Copy operations for this purpose must have no observable effects differing from if the argument were of <em>trivially copyable</em> type ([basic.types]) and the trivial copy constructor were used to construct the argument from the original object.</ins>
+    <p></p>
     <ins>[<em>Note:</em> Programmers for whom the object identity of the arguments to these function objects is important should consider using a wrapping iterator that returns a noncopied implementation object such as <code class="highlight"><span class="n">reference_wrapper</span><span class="o">&lt;</span><span class="n">T</span><span class="o">></span></code> [refwrap] or some equivalent solution. -<em>end note</em>]</ins>
    </blockquote>
    <h2 class="heading settled" data-level="3" id="discuss"><span class="secno">3. </span><span class="content">Discussion and Justification</span><a class="self-link" href="#discuss"></a></h2>

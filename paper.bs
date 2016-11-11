@@ -44,10 +44,12 @@ With discussion to follow below ([[#discuss]]), we recommend that the committee 
 
 <ins>Unless otherwise specified,</ins> function objects passed into parallel algorithms as objects of type `Predicate`, `BinaryPredicate`, `Compare`, <ins>UnaryOperation</ins> and `BinaryOperation` <ins>and the operators used by the analogous overloads to these parallel algorithms that could be formed by the invocation with the specified default predicate or operation (where applicable)</ins> shall not directly or indirectly modify objects via their arguments<ins>, which may be a copy of the original object(s) from the range(s) on which the algorithm operates.</ins>
 
+&nbsp;
 <ins>Copy operations for this purpose must have no observable effects differing from if the argument were of *trivially copyable* type ([basic.types]) and the trivial copy constructor were used to construct the argument from the original object.</ins>
 
-<ins>[*Note:* Programmers for whom the object identity of the arguments to these function objects is important should consider using a wrapping iterator that returns a noncopied implementation object such as `reference_wrapper<T>` [refwrap] or some equivalent solution. -*end note*]</ins>
 
+&nbsp;
+<ins>[*Note:* Programmers for whom the object identity of the arguments to these function objects is important should consider using a wrapping iterator that returns a noncopied implementation object such as `reference_wrapper<T>` [refwrap] or some equivalent solution. -*end note*]</ins>
 
 </blockquote>
 
