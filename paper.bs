@@ -11,7 +11,7 @@ Editor: Jonathan Lifflander, Sandia National Labs, jliffla@sandia.gov
 Editor: Michael Wong, Codeplay, michael@codeplay.com
 Editor: Detlef Vollmann, Vollmann Engineering, dv@vollmann.ch
 Abstract: This paper addresses NB comment CH 11 in [[P0488R0]]
-Date: 2016-11-09
+Date: 2017-01-31
 Markup Shorthands: markdown yes
 Toggle Diffs: yes
 Repository: dhollman/address-of-paper
@@ -68,139 +68,78 @@ issue: no observable effect different from trivially copyable
 Discussion and Justification {#discuss}
 ==========
 
-For just about all of the algorithms, the primary concern is that a predicate or comparison operator would rely on some property of the arguments’ addresses being consistent, whether in an absolute sense or a relative sense.  It is important to note that in every case, the parallel algorithm *could* still be used with a predicate reliant on the address if a layer of indirection that preserves the pertinent portion of the object’s address information (e.g., through a wrapping iterator).  Thus, it is not the actual breadth of capabilities provided by the parallel algorithm specifications that is being considered here; rather, it is the trade-offs between the cost of requiring the user to implement such a layer of indirection and the benefits of implementation flexibility with greater accessibility to performance optimizations.
+For just about all of the algorithms, the primary concern is that a predicate or comparison operator would rely on some property of the arguments’ addresses being consistent, whether in an absolute sense or a relative sense.  (The more general phrasing for this concept is "object identity," but the most relevant aspect of object identity in the current context is the object's address, so the two terms will be used interchangeably here.)  It is important to note that in every case, the parallel algorithm *could* still be used with a predicate reliant on the address if a layer of indirection that preserves the pertinent portion of the object’s address information (e.g., through a wrapping iterator).  Thus, it is not the actual breadth of capabilities provided by the parallel algorithm specifications that is being considered here; rather, it is the trade-offs between the cost of requiring the user to implement such a layer of indirection and the benefits of implementation flexibility with greater accessibility to performance optimizations.
 
-In most cases, the algorithms relevant to the wording in [[#word]] that require the same type of function object pose similar concerns to each other.  Of greatest concern are those functions accepting `Predicate` function objects.  A typical case is `find_if` ([alg.find]), where the function object could want to check for equality with a known object by doing address-wise comparison.  However, it is not uncommon for these use cases to have some other need for the kind of indirection needed to make this work (for instance, in-place sorting by address).
+In most cases, the algorithms relevant to the wording in [[#word]] that require the same type of function object pose similar concerns to each other.  Of greatest concern are those functions accepting `Predicate` function objects.  A typical case is `find_if` ([alg.find]), where the function object could want to check for equality with a known object by doing address-wise comparison.  However, it is not uncommon for these use cases to have some other need for indirection that would also make this work (for instance, in-place sorting by address).
 
-The first case raised for discussion in SG1 taking a `Compare` function object was `sort`.  However, given that the standard library implementation of this algorithm is in-place, comparison based on the address of the arguments would be nonsensical, given that the objects’ addresses would change as the sort progresses.  For the non-modifying parallel algorithms that use `Compare` (such as `min_element`, [alg.min.max]), the conceivable use cases for the addresses of the arguments to `Compare` are esoteric enough that the imposition of an indirection requirement is not onerous.
+In the SG1 meeting at Issaquah, the first case raised for discussion that takes a `Compare` function object was `sort` ([alg.sort]).  However, given that the standard library implementation of this algorithm is in-place, comparison based on the address of the arguments would be nonsensical, given that the objects’ addresses would change as the sort progresses.  Other needs for preservation of object identity (in the context of `sort`) could not immediately be devised, and we have not come up with any further use cases after some thought.  For the non-modifying parallel algorithms that use `Compare` (such as `min_element`, [alg.min.max]), the conceivable use cases for the addresses of the arguments to `Compare` are esoteric enough that the imposition of an indirection requirement is not onerous.
 
-Most of the algorithms that take a `BinaryPredicate` argument are even less problematic that the first two.  An example here would be `unique` [alg.unique].  We considered an amendment of the wording in [[#word]] for the case of `BinaryPredicate` that would require the relationship (in terms of total ordering) between the addresses of the arguments to be the same as in the original objects, but we decided against this in the interest of simplicity.
+Most of the algorithms that take a `BinaryPredicate` argument are even less problematic that the first two.  An example here would be `unique` [alg.unique].  We considered an amendment of the wording in [[#word]] for the case of `BinaryPredicate` that would require the relationship (in terms of total ordering) between the addresses of the arguments to be the same as in the original objects, but we decided against this in the interest of reduced conceptual overhead.
 
-The least problematic cases are those that take a `UnaryOperation` or `BinaryOperation` function object (note that `for_each` [alg.foreach] is excluded from this, since it takes an argument with the template parameter name `Function` instead).  An example of this is `transform` [alg.transform].  Since these take an argument (or two arguments) and return an object by value (for which the function object has no control over the address once copied), it is hard to imagine many use cases where the object identity of the arguments to these function objects is important, since that of the return value cannot be.  We do not claim that there are no use cases here affected by the proposed change, but it is a pretty reasonable argument that the potential benefits in terms of implementation flexibility outweigh the inconvenience of requiring indirection in these corner cases.
+The least problematic cases are those that take a `UnaryOperation` or `BinaryOperation` function object (note that `for_each` [alg.foreach] is specifically excluded from this, since it takes an argument with the template parameter name `Function` instead).  An example of this is `transform` [alg.transform].  Since these take an argument (or two arguments) and return an object by value (for which the function object has no control over object identity, once copied), it is hard to imagine many use cases where the object identity of the arguments to these function objects is important, since that of the return value cannot be.  We do not claim that there are no use cases here affected by the proposed change, but it is a pretty reasonable argument that the potential benefits in terms of implementation flexibility outweigh the inconvenience of requiring indirection in these corner cases.
 
 A wide variety of options were considered with respect to the requirements on the copyability of the objects in question for the wording suggested above.  It was noted that virtually any non-trivial copy constructor would either require the compiler to serialize the copy operations or prove the thread-safety of the copy constructor, which could be in another translation unit.  We settled on the *as-if* style wording given above to allow the implementation to examine the side-effects of a user-provided copy constructor if it desires and to prevent a scenario in which the user attempts to assert control over the copying behavior of the algorithm implementation by adding a copy constructor equivalent to the trivial one (which would be arcane and thus undesirable).
 
-The note in [[#word]] is intended to mimic that of the note in paragraph 10 of [algorithms.general], which references similar interactions with the function objects themselves.
+The note in [[#word]] is intended to mimic that of the note in paragraph 10 of [algorithms.general], which references similar interactions with the function objects themselves.  In other words, the standard already prohibits the reliance on the object identity of these function objects themselves, so the proposed extension of this prohibition to the function objects' arguments is not unprecedented.
 
-<!--
-`all_of` [alg.all_of] {#all_of}
----------------------
-
-The sorts of `Predicate` function objects that could be passed to `all_of` that could rely on the address of the argument are very esoteric.  One use case that could have a `Predicate` reliant on the `addressof` the argument would be one that takes a modulus of that address to query consistency in the alignment of all items in a range (though there are probably better ways to do this).
-
-Another use would be to check if all of the objects in a range fall in between two addresses (for instance, to copy all elements with one `memcpy` invocation).
-
-### Conservative approach
-It would potentially be sufficient to preserve the alignment of the first element in the input range as well as the relative offsets of addresses of the other elements compared to the first, though this is unlikely to be widely important.  The second possible corner case would not necessarily be addressed by this approach.
-
-### Flexible approach
-Forbid any reliance on `addressof` operations on the argument to `Predicate`.
-
-`any_of` [alg.any_of] {#any_of}
----------------------
-Similar to [[#all_of]].
-
-`none_of` [alg.none_of] {#none_of}
----------------------
-Similar to [[#all_of]].
-
-`for_each` [alg.foreach] {#foreach}
+The "Default Function Object" Clause {#defpred}
 ----------------------
-The function object passed to `for_each` is not included in [algorithms.parallel.user], therefore the proposed changes would not apply to `for_each`.
 
-`find` [alg.find] {#find}
--------------------------
-The algorithms `find_if` and `find_if_not` both take `Predicate` arguments.  In addition to the use cases in [[#all_of]] where the user might want to find an object with an address outside of a particular range or with a particular alignment, it may be desirable to check the containment of a non-equality-comparable ([equalitycomparable] in [[N4604]]) object in a given range.  We do not see an easy way to provide a conservative approach that preserves the correct behavior in this case.
+One more piece of the proposed wording in [[#word]] requires further elaboration.  We have inserted the following wording relating to the "default" function objects used by these algorithms:
 
-### Conservative approach
-Under the same constraints as [[#all_of]], some (but not all) possible corner cases could be handled.  There is no easy way that we can conceive of to constrain the proposed restriction to enable the non-equality-comparable containment use case.  It may be worth excluding `find_*` functions from the `addressof` restriction for this reason.
+<blockquote>
+[...] <ins>and the operators used by the analogous overloads to these parallel algorithms that could be formed by the invocation with the specified default predicate or operation (where applicable) </ins> [...]
+</blockquote>
 
-### Flexible approach
-Forbid any reliance on `addressof` operations on the argument to `Predicate`.  `Predicate`s like compare-by-address (as described above) would need to be run in serial or with a layer of indirection until more user-defined flexibility on the `addressof` behavior could be added to the language by some means.
+Consider the following code:
 
-`find_end` [alg.find.end] {#find_end}
--------------------------
-Since `find_end` operates on two different sequences, the analogs of the use cases in [[#find]] constitute a lot more esoteric use cases.  Whereas it is easy to envision a `Predicate` to `find_if` that is, for instance, a lambda that captures a reference to a desired value and compares its address to that of the argument passed to `Predicate`, the analogous use case that takes a `BinaryPredicate` is more likely to do something like compare the addresses of the arguments to *each other*, which is much more easily handled by the conservative approach
+```
+template <typename T>
+void call_a(vector<T>& seq) {
+  std::sort(std::par, seq.begin(), seq.end());
+}
+template <typename T>
+void call_b(vector<T>& seq) {
+  std::sort(std::par, seq.begin(), seq.end(),
+    [&](T const& a, T const& b){ return a < b; }
+  );
+}
+```
 
-### Conservative approach
-For `find_end` and most other algorithms that take a `BinaryPredicate` function argument, it could be reasonable to provide a restriction intermediate to that of [[#find]] in which the relationship between the addresses of the arguments in any given call to the `BinaryPredicate` remains unchanged (but allow the relationships between addresses of arguments in different calls to be completely unconstrained).
+From the description of `sort` and other algorithms that take a `Compare` function object ([alg.sorting]), one would expect that `call_a` and `call_b` should have equivalent behavior, regardless of the type of `T`.  But consider the following class with a user-defined `operator<()`:
 
-### Less conservative approach
-A slightly weaker restriction that still covers a lot of the use cases is to require only that the equality relationship on the addresses of the arguments be preserved.  This gives the implementation much more flexibility since it need not allocate memory the side of the distance between the argument addresses in order to make the call safely.  This approach also covers most of the use cases for most of the algorithms requiring `BinaryPredicate` function objects.
+```
+struct Counted {
+  int value;
+  mutable int compares = 0;
+  bool operator<(Counted const& other) const {
+    ++compares;
+    ++other.compares;
+    return value < other.value;
+  }
+}
+```
 
-### Flexible approach
-The flexible approach of completely forbidding `addressof` operations on arguments to `find_end` and most other algorithms that take a `BinaryPredicate` has pretty much the same drawbacks as the other algorithms, with the caveat that the conservative approach is less restrictive and exposes much of the functionality (thus making the flexible approach slightly less appealing).
+The intent of paragraph 1 of `[algorithms.parallel.user]` is clearly to prohibit this sort of behavior, but under the current wording, invoking `call_a` with a `vector<Counted>` would bee allowed, but invoking `call_b` would not, since it gives a user-defined `Compare` that modifies objects via the arguments.  The extension of this prohibition to argument object identity, consistent with the rest of this discussion, also makes sense.
 
-`find_first` [alg.find.first.of] {#find_first}
--------------------------
-Similar to [[#find_end]]
+Summary {#summary}
+========
 
-`adjacent_find` [alg.adjacent.find] {#adjacent_find}
--------------------------
-Similar to [[#find_end]]
+As we see it, the positives and negative of adopting the above wording can be summarized as follows:
 
-`count` [alg.count] {#count}
--------------------
-The major concerns surrounding `count` are similar to those of [[#any_of]]
+Positives:
 
-`mismatch` [mismatch] {#mismatch}
----------------------
-Similar to [[#find_end]]
++ Increased implementation flexibility
+    + Greater potential for implementation performance would likely lead to wider adoption.
++ Better default behavior in future implementations (when such behaviors as the one discussed herein could be subsumed into standard options on an Executor [[P0443R0]] or `ExecutionPolicy`)
+    + In particular, some members of SG1 were keen to make sure that C++17 code should have reasonable compatibility "by default" with future implementations that may want to copy arguments to memory addresses not accessible from the calling context (e.g., a GPGPU; note that there is currently no concept of inaccessible memory under the memory model of the current standard).
 
-`equal` [alg.equal] {#equal}
----------------------
-Similar to [[#find_end]]
+Negatives:
 
-`search` [alg.search] {#search}
----------------------
-Similar to [[#find_end]]
-
-`copy_if` [alg.copy] {#copy_if}
---------------------------
-Similar to [[#all_of]], except that the alignment argument is a bit weaker here.
-
-`transform` [alg.transform] {#transform}
------------------------
-We could not come up with a reasonable use case for which `transform` would need a `UnaryOperation` that depends on the address of its argument.
-
-`replace_if` [alg.replace]
---------------------------
-Similar to [[#find]]
-
-`replace_copy_if` [alg.replace]
---------------------------
-Similar to [[#find]]
-
-`remove_if` [alg.remove]
---------------------------
-Similar to [[#find]]
-
-`remove_copy_if` [alg.remove]
---------------------------
-Similar to [[#find]]
-
-`unique` [alg.unique]
----------------------
-Similar to [[#find_end]]
-
-`unique_copy` [alg.unique]
----------------------
-Similar to [[#find_end]]
-
-`partition` [alg.partition]
----------------------------
-`partition` and related functions (`is_partitioned`, `stable_partition`, `partition_copy`) have a specific reasonable use case: radix sort binning.  We cannot come up with a reasonable conservative approach that works for this use case.
-
-`sort` [alg.sort] {#sort}
---------------------
-The most compelling use case for `sort` with a `Compare` operation that relies on the addresses of its arguments is the sorting of locks for the purpose of deadlock avoidance.  We acknowledge that this is a legitimate use case and therefore suggest we consider explicitly excluding `sort` from the `addressof` restriction.  The conservative approach suggested for [[#find_end]] and other algorithms that take a `BinaryPredicate` would cover this use case, though, as well as most of the other cases that take `Compare` function objects.
-
-`stable_sort` [stable.sort]
------------------------------
-Similar to [[#sort]]
-
-advisement: There are more algorithms that could be considered in this section, but we feel we’ve covered most of the broad categories of use cases.  If SG1 feels it is necessary, we can extend this to include subsections for the rest of the parallel algorithms in [[N4604]]
--->
+- Increased conceptual overhead
+    + This effect is likely negligible since virtually all violating uses proposed after substantial discussion would be corner cases.
+- Users who want address-dependent behavior need to implement a wrapper
+    + This drawback is made less severe since these users are already providing a custom function object anyway.
 
 
 
